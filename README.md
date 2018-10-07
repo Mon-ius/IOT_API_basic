@@ -20,7 +20,7 @@ Single Operation
 - PUT UPDATE(VALUE,PLACE) => https://xxiot.herokuapp.com/api/temps/<id>
 - DELETE  https://xxiot.herokuapp.com/api/temps/<id>
 
-Structure
+**Structure**
 
 - id(Int)
 - value(String)

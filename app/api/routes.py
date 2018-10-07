@@ -4,6 +4,8 @@ from app.fields import temp_fields, temps_fields
 from app.models import Temperature
 from ext import  db
 
+from datetime import datetime, timedelta, timezone
+
 
 def abort_if_temp_doesnt_exist(id):
     temp = Temperature.query.filter_by(id=id).first()
@@ -59,9 +61,8 @@ class TemperatureListAPI(Resource):
         t = Temperature(**args)
         db.session.add(t)
         db.session.commit()
-        args['id']=len(Temperature.query.all())
-
-        return {'temp': marshal(args, temps_fields)}
+        t.correct()
+        return {'temp': marshal(t.__dict__, temps_fields)}
 
 
 class OpenRes(Resource):

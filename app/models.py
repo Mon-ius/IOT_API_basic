@@ -11,5 +11,7 @@ class Temperature(db.Model):
     place = db.Column(db.String(120))
     creation_date = db.Column(db.DateTime, default=datetime.utcnow)
     def __repr__(self):
-        return '<Temperature {} at {} in {}>'.format(self.value,self.place,str(creation_date)[:10])
+        return '<Temperature {} at {} in {}>'.format(self.value,self.place,str(self.creation_date)[:10])
+    def correct(self):
+        self.id=self.id
 
