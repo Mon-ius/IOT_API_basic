@@ -15,6 +15,15 @@ data_02 = {"value":str(random.random()*10),"place":"ks51"}
 
 urls = [url_01, url_02, url_03]
 
+def init(res):
+    global extra_url_02
+    q=r.get(res)
+    if q.status_code==200:
+        rs = q.json()
+        if len(rs['temps'])>0:
+            extra_url_02 = extra_url_02[:-1]+str(rs['temps'][-1]['id']+1)
+
+
 def get_test(res):
     q=r.get(res)
     print(q.json())
@@ -46,7 +55,7 @@ if __name__ == '__main__':
 
     # get_test(url+extra_url_01)
 
-    functionList_01 = [post_test, get_test]
+    functionList_01 = [init,post_test, get_test]
     functionList_02 = [get_test, put_test,get_test,delete_test]
 
     for foo in functionList_01:

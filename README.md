@@ -26,8 +26,20 @@ Single Operation
 - value(String)
 - place(String)
 - creation_date(DateTime)
+  
+## Test
+
+### HTTP Test
+- python api_http_test.py
+- select correct service
+
+### Basic API Test
+- python api_basic_test.py
+- select correct service
 
 ## Requirements
+
+### Packages
 
 - Flask
 - Flask-Restful
@@ -37,3 +49,8 @@ Single Operation
 - Flask-Migrate
 - Psycopg2-binary
 - Gunicorn
+- requests
+
+### Runtime Version
+
+- python=3.6.6
