@@ -12,7 +12,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 app.config.update({
-    'SQLALCHEMY_DATABASE_URI': os.environ['DATABASE_URL'],
+    'SQLALCHEMY_DATABASE_URI': os.environ['POSTGRE_URL'],
     'SQLALCHEMY_TRACK_MODIFICATIONS': True
 })
 db = SQLAlchemy(app)
