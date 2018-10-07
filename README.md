@@ -1,15 +1,15 @@
-## IOT_API
+# IOT_API
 
-- Example_url : https://xxiot.herokuapp.com
+Example_url : https://xxiot.herokuapp.com
 
-### Main Function
+## Main Function
 
-#### Index
+### Index
 
 hello world!
 - GET https://xxiot.herokuapp.com/
 - 
-#### Temperature API
+### Temperature API
 
 List Operation
 - GET https://xxiot.herokuapp.com/api/temps
@@ -27,7 +27,7 @@ Structure
 - place(String)
 - creation_date(DateTime)
 
-### Requirements
+## Requirements
 
 - Flask
 - Flask-Restful
