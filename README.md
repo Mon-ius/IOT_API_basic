@@ -7,17 +7,17 @@ Example_url : https://xxiot.herokuapp.com
 ### Index
 
 hello world!
-- GET https://xxiot.herokuapp.com/
-- 
+- GET https://xxiot.herokuapp.com
+
 ### Temperature API
 
 List Operation
 - GET https://xxiot.herokuapp.com/api/temps
-- POST (VALUE,PLACE) => https://xxiot.herokuapp.com/api/temps
+- POST ADD(VALUE,PLACE) => https://xxiot.herokuapp.com/api/temps
 
 Single Operation
 - GET https://xxiot.herokuapp.com/api/temps/<id>
-- PUT (VALUE,PLACE) => https://xxiot.herokuapp.com/api/temps/<id>
+- PUT UPDATE(VALUE,PLACE) => https://xxiot.herokuapp.com/api/temps/<id>
 - DELETE  https://xxiot.herokuapp.com/api/temps/<id>
 
 Structure
