@@ -36,6 +36,14 @@
 
 ## Ultimate
 
+### SSL (example:Cloudflare)
+
+- sudo apt install socat -y
+- curl https://get.acme.sh | sh 
+- **Attention** {{Provider}}_Id,{{Provider}}_Key
+- export DP_Id="50847"
+- export DP_Key="6cd08fb87956mmmmmmmmmmmmmmmmmmmm"
+
 ### Service
 
 ### Postgres
