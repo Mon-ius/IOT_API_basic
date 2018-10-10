@@ -46,9 +46,6 @@ def gen_ini(usr,loc):
     
         fh.close()
 
-
-
-
 def gen_nginx(loc):
     with open(NGINX, "r") as fh:
         fds = fh.read()
@@ -62,7 +59,6 @@ def gen_nginx(loc):
     
         fh.close()
     
-
 if __name__ == '__main__':
     domain = input("Input domain name : ")
     if domain and len(domain)>3:

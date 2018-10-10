@@ -1,5 +1,8 @@
 Flask
 requests
+python-dotenv
+# gevent preinstall
+# uwsgi preinstall 
 Flask-Restful
 Flask-Sqlalchemy
 Flask-WTF

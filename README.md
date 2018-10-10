@@ -54,3 +54,10 @@ Single Operation
 ### Runtime Version
 
 - python=3.6.6
+
+## Deploy 
+
+- socket 
+- uwsgi
+- user
+- project_dir 
