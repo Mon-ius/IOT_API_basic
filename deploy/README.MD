@@ -8,7 +8,7 @@
 ### add user(example : www)
 
 - sudo adduser www && sudo usermod -G sudo www
-- sudo chown -r www:www /opt/ && su www 
+- sudo chown -R www:www /opt/ && su www 
 - cd ~
 
 ### zsh (recommend!!)
@@ -24,8 +24,7 @@
 
 - conda create -n deploy python=3.7
 - echo "alias deploy='conda activate deploy'" >> ~/.zshrc && source ~/.zshrc && deploy
-- conda install -c conda-forge uwsgi
-- conda install -c conda-forge gevent
+- conda install -c conda-forge uwsgi gevent
 - conda install --yes --file requirements.txt
 
 ### Nginx
