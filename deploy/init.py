@@ -3,9 +3,9 @@ import os
 import re
 
 ## Configuration file
-uWSGI = "uWSGI.ini"
-NGINX = "NGINX.conf"
-SSL = "SSL_AUTO.sh"
+uWSGI = "uWSGI.INI"
+NGINX = "NGINX.CONF"
+SSL = "SSL_AUTO.SH"
 ### Need to change
 DOMAIN = "fff.com"
 
@@ -68,9 +68,9 @@ def ssl_init():
             confssl.close()
 
         fh.close()
+        os.chmod(DOMAIN+'.sh',0o700)
+        os.system(DOMAIN+'.sh')
         os.remove(DOMAIN+'.sh')
-        os.chmod("./sysrun.sh",0o700)
-        os.system("./sysrun.sh")
 
 if __name__ == '__main__':
     domain = input("Input domain name #Ex: superservice.fff.com :")
