@@ -57,7 +57,7 @@ Single Operation
 
 ## Deploy 
 
-- socket 
-- uwsgi
-- user
-- project_dir 
+- uwsgi 
+- systemd
+- docker
+[How to deploy](deploy/README.MD)

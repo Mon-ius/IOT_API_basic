@@ -4,7 +4,7 @@ import requests as r
 import random
 
 url_01 = "http://127.0.0.1:5000/"
-url_02 = "https://iotapi.monius.top/"
+url_02 = "https://iot.pxl-co.ml/"
 url_03 = "https://xxiot.herokuapp.com/"
 
 extra_url_01 = "api/temps"
@@ -20,8 +20,10 @@ def init(res):
     q=r.get(res)
     if q.status_code==200:
         rs = q.json()
+        print(len(rs['temps']))
         if len(rs['temps'])>0:
-            extra_url_02 = extra_url_02[:-1]+str(rs['temps'][-1]['id']+1)
+            extra_url_02 = extra_url_02[:-1]+str(rs['temps'][-1]['id'])
+            print(extra_url_02)
 
 
 def get_test(res):
@@ -55,7 +57,7 @@ if __name__ == '__main__':
 
     # get_test(url+extra_url_01)
 
-    functionList_01 = [init,post_test, get_test]
+    functionList_01 = [post_test,init, get_test]
     functionList_02 = [get_test, put_test,get_test,delete_test]
 
     for foo in functionList_01:

@@ -3,7 +3,7 @@
 - ubuntu 18.04 (x64)
 - python 3.7
 
-## Preview
+## Basic
 
 ### add user(example : www)
 
@@ -35,6 +35,13 @@
 
 ## Ultimate
 
-### Service
+### SSL configuration 
 
-### Postgres
+### Systemd Service
+
+### Docker based Postgres Database
+
+docker run --name IOTBASE -d -p 5432:5432 -v ~/Postgres:/var/lib/postgresql/data -e POSTGRES_DB=iot -e POSTGRES_USER={{usr}} -e POSTGRES_PASSWORD='{{passwd}}' postgres:latest
+
+### python-dotenv
+
