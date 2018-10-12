@@ -45,3 +45,34 @@ docker run --name IOTBASE -d -p 5432:5432 -v ~/Postgres:/var/lib/postgresql/data
 
 ### python-dotenv
 
+
+## Auto deploy script
+
+### enviroment
+
+- domain name(*)
+- SSL email(*)
+- SSL API key(*)
+- current user(-)
+- current folder(-)
+- current project folder(-)
+- current project name(-)
+
+### SSL
+
+- sudo apt install socat
+
+### uwsgi.ini
+
+### nginx.conf
+
+### docker script
+
+- sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
+- curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+- sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+- sudo apt update && sudo apt install docker-ce -y
+
+
+### iot.service
+

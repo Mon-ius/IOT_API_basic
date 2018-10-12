@@ -1,15 +1,15 @@
 [Unit]
-Description=IOT Service daemon
+Description={{domain}} Service daemon
 After=network.target
 
 [Service]
 Type=simple
 # Another Type option: forking
 
-User=www
+User={{usr}}
 Environment="PYTHONHOME=/opt/anaconda3/envs/deploy/"
 Environment="PYTHONPATH=/opt/anaconda3/envs/deploy/lib"
-WorkingDirectory=/var/www/iot_api/deploy
+WorkingDirectory={{loc}}
 ExecStart=/opt/anaconda3/envs/deploy/bin/uwsgi {{domain}}.ini
 Restart=on-failure
 KillMode=mixed
