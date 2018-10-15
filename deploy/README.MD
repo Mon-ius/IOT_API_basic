@@ -43,6 +43,9 @@
 
 docker run --name IOTBASE -d -p 5432:5432 -v ~/Postgres:/var/lib/postgresql/data -e POSTGRES_DB=iot -e POSTGRES_USER={{usr}} -e POSTGRES_PASSWORD='{{passwd}}' postgres:latest
 
+CREATE DATABASE {{database_name}} OWNER {{user}};
+GRANT ALL PRIVILEGES ON DATABASE {{database_name}} to {{user}};
+
 ### python-dotenv
 
 

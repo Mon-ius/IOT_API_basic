@@ -16,17 +16,17 @@ NGINX_CONF = "/etc/nginx/sites-enabled/"
 SYSTEMD_CONF = "/etc/systemd/system/"
 
 
-
 def get_env():
     cu = getpass.getuser()
     cwd = os.getcwd()
-    return cu,cwd
+    return cu, cwd
+
 
 def add_env(**args):
     env = os.path.dirname(loc)
     print(args)
     with open(env+'/.env', 'a') as file:
-        for i,j in args.items():
+        for i, j in args.items():
             tmp = i+'='+j
             print(tmp)
             file.write(tmp)
@@ -34,6 +34,8 @@ def add_env(**args):
     return False
 
 #static
+
+
 def init_ssl():
     key = input("Cloudflare API token #Ex: dah2dsadscangh : ")
     email = input("Cloudflare email #Ex: sexybuddy@fff.com : ")
@@ -79,34 +81,38 @@ def init_docker(usr):
         # os.remove(DOMAIN+'.run')
 
         #add DATABASE_URL into .env
-        conf = "postgres://{}:{}@172.17.0.1:5432/{}".format(usr, loc+DOMAIN+usr, DOMAIN)
+        conf = "postgres://{}:{}@172.17.0.1:5432/{}".format(
+            usr, loc+DOMAIN+usr, DOMAIN)
         add_env(DATABASE_URL=conf)
 
         print("-1- Docker run script: {} create successfully".format(DOMAIN+'.run'))
         print("-1- Enviroment file : {} add successfully".format("app/.env"))
 
-def add_uwsgi(usr,loc):
+
+def add_uwsgi(usr, loc):
     env = os.path.dirname(loc)
-   
+
     with open(uWSGI, 'r') as fh:
         fds = fh.read()
 
-        fce = re.sub(r'{{env}}',env,fds)
-        fcu = re.sub(r'{{usr}}',usr,fce)
-        res = re.sub(r'{{loc}}',loc,fcu)
+        fce = re.sub(r'{{env}}', env, fds)
+        fcu = re.sub(r'{{usr}}', usr, fce)
+        res = re.sub(r'{{loc}}', loc, fcu)
 
         with open(DOMAIN+'.ini', 'w') as confuwsgi:
             confuwsgi.write(res)
             confuwsgi.close()
-    
+
         fh.close()
         print("-2- uwsgi init script: {} create successfully".format(DOMAIN+'.ini'))
 
 #static
+
+
 def add_nginx(loc):
     with open(NGINX, "r") as fh:
         fds = fh.read()
-    
+
         fcd = re.sub(r'{{domain}}', DOMAIN, fds)
         res = re.sub(r'{{loc}}', loc, fcd)
 
@@ -114,9 +120,10 @@ def add_nginx(loc):
             confnginx.write(res)
             confnginx.close()
             try:
-                shutil.move(DOMAIN+'.conf',NGINX_CONF)
+                shutil.move(DOMAIN+'.conf', NGINX_CONF)
             except PermissionError:
-                print("-3- Nginx : try to mv {} to {} manually with root".format(DOMAIN+'.conf'),NGINX_CONF)
+                print(
+                    "-3- Nginx : try to mv {} to {} manually with root".format(DOMAIN+'.conf'), NGINX_CONF)
             except shutil.Error:
                 print("Complete")
             else:
@@ -144,7 +151,8 @@ def add_service(usr, loc):
                 shutil.move(DOMAIN+'.service', SYSTEMD_CONF)
 
             except PermissionError:
-                print("-4- Systemd try to mv {} to {} manually with root".format(DOMAIN+'.service',SYSTEMD_CONF))
+                print(
+                    "-4- Systemd try to mv {} to {} manually with root".format(DOMAIN+'.service', SYSTEMD_CONF))
             except shutil.Error:
                 print("Complete")
             else:
@@ -155,6 +163,7 @@ def add_service(usr, loc):
         fh.close()
         print("-4- Systemd service file : {} create successfully".format(DOMAIN+'.service'))
 
+
 def accept_warning(s):
     c = ''
     d = {'Y': True, 'y': True, 'N': False, 'n': False}
@@ -163,11 +172,10 @@ def accept_warning(s):
     return d[c]
 
 
-
 if __name__ == '__main__':
-    usr,loc = get_env()
+    usr, loc = get_env()
     domain = input("Input domain name #Ex: superservice.fff.com :")
-    if domain and len(domain)>3:
+    if domain and len(domain) > 3:
         DOMAIN = domain
     if not accept_warning("Do you have ssl cert"):
         init_ssl()
@@ -175,7 +183,6 @@ if __name__ == '__main__':
     if not accept_warning("Do you have database installed"):
         init_docker(usr)
 
-    
-    add_uwsgi(usr,loc)
+    add_uwsgi(usr, loc)
     add_nginx(loc)
-    add_service(usr,loc)
+    add_service(usr, loc)

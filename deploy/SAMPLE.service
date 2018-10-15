@@ -10,6 +10,7 @@ User={{usr}}
 Environment="PYTHONHOME=/opt/anaconda3/envs/deploy/"
 Environment="PYTHONPATH=/opt/anaconda3/envs/deploy/lib"
 WorkingDirectory={{loc}}
+ExecStartPre=docker start {{domain}}
 ExecStart=/opt/anaconda3/envs/deploy/bin/uwsgi {{domain}}.ini
 Restart=on-failure
 KillMode=mixed
