@@ -37,6 +37,11 @@ Single Operation
 - python api_basic_test.py
 - select correct service
 
+### Curl
+
+- curl  -i -H "Content-Type: application/json" -X POST -d '{"place":"pxl","value":"20"}' https://xxiot.herokuapp.com/api/temps
+- curl  -i -H "Content-Type: application/json" -X GET  https://xxiot.herokuapp.com/api/temps
+
 ## Requirements
 
 ### Packages
