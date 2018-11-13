@@ -1,4 +1,0 @@
-docker run --restart unless-stopped --name {{domain}} -d -p 5432:5432 \
--v ~/Postgres:/var/lib/postgresql/data \
--e POSTGRES_DB={{domain}} -e POSTGRES_USER={{usr}} -e POSTGRES_PASSWORD='{{passwd}}' \
-postgres:latest
