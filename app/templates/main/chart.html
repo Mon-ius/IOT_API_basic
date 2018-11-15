@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% block styles %}
+{{super()}}
+<style>
+    canvas {
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+    }
+</style>
+{% endblock %}
+
+{% block body_attribs %} "agency" {% endblock %}
+{% block app_content %}
+<section class="section feature-box my-5 pb-5">
+    <hr>
+    <div class="container">
+        <h4 class="h1-responsive font-weight-bold text-center my-5">Data View</h4>
+        <hr class="my-5">
+        <div style="width:99%;">
+		<canvas id="canvas"></canvas>
+	    </div>
+    </div>
+</section>
+
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for( 'static',filename='js/Chart.bundle.js' )}}"></script>
+<script src="{{ url_for( 'static',filename='js/utils.js' )}}"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@latest/moment.min.js"></script>
+<script>
+var tmp_data=[];
+var lgt_data=[];
+var t_data=[];
+    window.onload = function () {
+        console.log("begin");
+
+            $.ajax("{{ light }}").done(
+                function (data) {
+                    console.log(data);
+                    for(var i=0;i<30;i++)
+                        lgt_data.push(data['lights'][i]['value'])
+                    console.log(lgt_data);
+            }
+        );
+        $.ajax("{{ tmp }}").done(
+            function (data) {
+                console.log(data);
+                for(var i=0;i<30;i++){
+                    tmp_data.push(data['temps'][i]['value'])
+                    t_data.push(moment(data['temps'][i]['creation_date'], "HH:mm:ss"))
+                }
+                var ctx = document.getElementById('canvas').getContext('2d');
+                window.myLine = new Chart(ctx, config);
+            }
+            );
+    }
+</script>
+<script>
+    var config = {
+        type: 'line',
+
+        data: {
+            labels:t_data,
+            datasets: [{
+                label: 'Tempertature',
+                backgroundColor: window.chartColors.red,
+                borderColor: window.chartColors.red,
+                data: tmp_data,
+                fill: false,
+            }, {
+                label: 'Light',
+                fill: false,
+                backgroundColor: window.chartColors.blue,
+                borderColor: window.chartColors.blue,
+                data: lgt_data,
+            }]
+        },
+        options: {
+            responsive: true,
+            title: {
+                display: true,
+                text: 'Internet Of Things Data in Chart View '
+            },
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+            },
+            scales: {
+                xAxes: [{
+                    type: 'time',
+                    time: {
+                        parser:'HH:mm:ss',
+                        unit: 'second',
+                        displayFormats: {
+                        second: "mm:ss"
+                        }
+                    },
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'TimeLine'
+                    },
+               ticks: {
+                  source: 'data'
+               }
+                }],
+                yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Value'
+                    }
+                }]
+            }
+        }
+    };
+
+</script>
+{% endblock %}

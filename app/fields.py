@@ -13,3 +13,17 @@ temps_fields = {
     'place': fields.String,
     'creation_date': fields.DateTime
 }
+
+light_fields = {
+    'id': fields.Integer,
+    'value': fields.String,
+    'place': fields.String,
+    'creation_date': fields.DateTime
+}
+
+lights_fields = {
+    'id': fields.Integer,
+    'value': fields.String,
+    'place': fields.String,
+    'creation_date': fields.DateTime
+}

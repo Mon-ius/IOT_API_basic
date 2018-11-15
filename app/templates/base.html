@@ -1,0 +1,138 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block styles %}
+<link rel="stylesheet" type="text/css" href="{{ url_for( 'static',filename='css/bootstrap.min.css' )}}">
+<link rel="stylesheet" type="text/css" href="{{ url_for( 'static',filename='css/font-awesome.min.css' )}}">
+<link rel="stylesheet" type="text/css" href="{{ url_for( 'static',filename='css/mdb.min.css' )}}">
+<style>
+    .navbar {
+        background-color: #292c2f;
+    }
+
+    html,
+    body,
+    .section {
+        height: 100%;
+    }
+
+    @media (min-width: 560px) and (max-width: 740px) {
+
+        html,
+        body,
+        .section {
+            height: 470px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block title %}
+    {% if title %}{{ title }} - {{ 'IOT' }}{% else %} {{ 'IOT' }}{% endif %}
+{% endblock %}
+
+{% block head %}
+    {{super()}}
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.png') }}">
+
+    {% block meta %}
+        <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+        <meta charset="utf-8">
+        <meta http-equiv="content-type" content="text/html" />
+        <meta name="author" content="Monius" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% endblock %}
+{% endblock %}
+
+
+
+{% block navbar %}
+<header>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top scrolling-navbar">
+        <div class="container">
+            <a class="navbar-brand" href="{{url_for('main.index')}}">Home</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02"
+                aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+                <ul class="navbar-nav mr-auto smooth-scroll">
+                    <li class="nav-item">
+                        <a class="nav-link text-uppercase waves-effect waves-light" href="{{url_for('main.chart')}}">Chart
+                            <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-uppercase waves-effect waves-light" href="{{url_for('main.table')}}">Table
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-uppercase waves-effect waves-light" href="{{url_for('main.mannual')}}">Mannual
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-uppercase waves-effect waves-light" href="{{url_for('main.relationship')}}">Relationship
+                        </a>
+                    </li>
+
+
+                </ul>
+
+                <!-- Social Icon  -->
+                <ul class="navbar-nav nav-flex-icons">
+                    <li class="nav-item">
+                        <a class="nav-link waves-effect waves-light" href="https://github.com/Mon-ius"><i class="fa fa-github light-green-text-2"></i></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+{% endblock %}
+
+{%- block content %}
+{{super()}}
+
+{% block app_content %}{% endblock %}
+
+{%- block footer %}
+<hr>
+
+<footer class="page-footer font-small special-color-dark pt-4">
+    <div class="footer-copyright text-center py-3">&copy; Created in Nov.2018
+        <a href="https://github.com/Mon-ius"> Monius</a>
+    </div>
+</footer>
+
+
+{%- endblock footer %}
+
+{%- endblock content %}
+
+{% block scripts %}
+<script src="{{ url_for( 'static',filename='js/jquery-3.3.1.min.js' )}}"></script>
+<script src="{{ url_for( 'static',filename='js/popper.min.js' )}}"></script>
+<script src="{{ url_for( 'static',filename='js/bootstrap.min.js' )}}"></script>
+<script src="{{ url_for( 'static',filename='js/mdb.min.js' )}}"></script>
+<script>
+    $(document).ready(function () {
+        $('.mdb-select').material_select();
+    });
+    // initialize scrollspy
+    $('body').scrollspy({
+        target: '.dotted-scrollspy'
+    });
+
+    // initialize lightbox
+    $(function () {
+        $("#mdb-lightbox-ui ").load("mdb-addons/mdb-lightbox-ui.html ");
+    });
+
+    /* WOW.js init */
+    new WOW().init();
+
+    $('.navbar-collapse a').click(function () {
+        $(".navbar-collapse ").collapse('hide');
+    });
+</script>
+{% endblock %}

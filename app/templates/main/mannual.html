@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block styles %}
+{{super()}}
+<style>
+
+</style>
+{% endblock %}
+
+{% block body_attribs %} "agency" {% endblock %}
+{% block app_content %}
+
+
+<section class="section feature-box my-5 pb-5">
+    <hr>
+
+<div class="container">
+<h4 class="h1-responsive font-weight-bold text-center my-5">Mannual Data Collection</h4>
+
+<hr class="my-5">
+    <div class="row">
+        <div class="col">
+<form class="text-center border border-light p-5">
+
+<p class="h4 mb-4">Temperature Data Mannual Input Form</p>
+
+    <p>Imaging now you are a brilliant Temperature Sensor .</p>
+
+
+    <input type="text" id="tmp-val" class="form-control mb-4" placeholder="Value">
+
+
+    <input type="text" id="tmp-place" class="form-control mb-4" placeholder="Place">
+
+
+<a class="btn btn-info btn-block" type="submit" id="sendTmp">Collect it !</a>
+
+
+</form>
+
+        </div>
+<div class="col">
+<form class="text-center border border-light p-5">
+
+    <p class="h4 mb-4">Light Data Mannual Input Form</p>
+
+    <p>Imaging now you are a brilliant Light Sensor .</p>
+
+ 
+    <input type="text" id="light-val" class="form-control mb-4" placeholder="Value">
+
+
+    <input type="text" id="light-place" class="form-control mb-4" placeholder="Place">
+
+<a class="btn btn-info btn-block" type="submit" oid="sendLight">Collect it !</a>
+
+
+</form>
+        </div>
+    </div>
+
+</div>
+
+</section>
+
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+
+<script>
+$("#sendTmp").click(function () {
+var t = $(this).parent().parent();
+var data = {
+"value": $("#tmp-val").val(),
+"place":$("#tmp-place").val(),
+}
+console.log(data);
+$.ajax({
+url: "{{tmp}}",
+type: 'post',
+data: JSON.stringify(data),
+dataType: 'json',
+contentType: 'application/json',
+success: function (data) {
+console.log('success');
+t.append("<div class='alert alert-secondary' role='alert'>New Data Collected</div>");
+},
+
+});
+
+});
+
+$("#sendLight").click(function () {
+var t = $(this).parent().parent();
+var data = {
+"value": $("#light-val").val(),
+"place":$("#light-place").val()
+}
+console.log(data);
+$.ajax({
+url: "{{light}}",
+type: 'post',
+data: JSON.stringify(data),
+dataType: 'json',
+contentType: 'application/json',
+success: function (data) {
+console.log('success');
+t.append("<div class='alert alert-secondary' role='alert'>New Data Collected</div>");
+},
+
+});
+
+});
+
+</script>
+{% endblock %}
