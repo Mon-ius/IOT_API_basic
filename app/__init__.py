@@ -14,7 +14,7 @@ def create_app(config_class=Config):
     bootstrap.init_app(app)  # Bootstrap init
 
     from app.api import bp as api_bp  
-    from app.api.routes import SensorListAPI,SensorAPI,DataListAPI,DataAPI,OpenRes
+    from app.api.routes import SensorListAPI,SensorAPI,DataListAPI,DataAPI,OpenRes,UserAPI
 
     api_temp = Api(api_bp)
 
@@ -22,6 +22,7 @@ def create_app(config_class=Config):
     api_temp.add_resource(SensorAPI, '/api/sensors/<int:id>')
     api_temp.add_resource(DataListAPI, '/api/dataset')
     api_temp.add_resource(DataAPI, '/api/dataset/<int:id>')
+    api_temp.add_resource(UserAPI, '/api/user')
     api_temp.add_resource(OpenRes, '/res')
     app.register_blueprint(api_bp)
     
