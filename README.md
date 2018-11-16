@@ -69,6 +69,7 @@ Data
 
 - Flask
 - Flask-Restful
+- Flask_httpauth
 - Flask-Sqlalchemy
 - Flask-WTF
 - Flask-Bootstrap
