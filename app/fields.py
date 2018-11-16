@@ -8,7 +8,7 @@ sensor_fields = {
 
 data_fields = {
     'id': fields.Integer,
-    'value': fields.Flot,
+    'value': fields.Float,
     'ip': fields.String,
     'creation_date': fields.DateTime
 }

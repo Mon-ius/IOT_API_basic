@@ -1,5 +1,5 @@
 from flask import flash, redirect, render_template, request, url_for,send_from_directory,current_app
-from app.api.routes import TemperatureListAPI,LightListAPI
+from app.api.routes import SensorListAPI,DataListAPI
 from app.main import bp
 from flask_restful import Api
 
