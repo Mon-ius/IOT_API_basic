@@ -9,23 +9,42 @@ Example_url : https://xxiot.herokuapp.com
 hello world!
 - GET https://xxiot.herokuapp.com
 
-### Temperature API
+### Sensor API
 
 List Operation
-- GET https://xxiot.herokuapp.com/api/temps
-- POST ADD(VALUE,PLACE) => https://xxiot.herokuapp.com/api/temps
+- GET https://xxiot.herokuapp.com/api/sensors
+- POST ADD(TYPE) => https://xxiot.herokuapp.com/api/sensors
 
 Single Operation
-- GET https://xxiot.herokuapp.com/api/temps/<id>
-- PUT UPDATE(VALUE,PLACE) => https://xxiot.herokuapp.com/api/temps/<id>
-- DELETE  https://xxiot.herokuapp.com/api/temps/<id>
+- GET https://xxiot.herokuapp.com/api/sensors/<id>
+- PUT UPDATE(UUID,TYPE) => https://xxiot.herokuapp.com/api/sensors/<id>
+- DELETE  https://xxiot.herokuapp.com/api/sensors/<id>
+
+
+### Data API
+
+List Operation
+- GET (UUID) https://xxiot.herokuapp.com/api/dataset
+- POST ADD(UUID,VALUE) => https://xxiot.herokuapp.com/api/dataset
+
+Single Operation
+- GET (UUID) https://xxiot.herokuapp.com/api/dataset/<id>
+- PUT UPDATE(UUID,VALUE) => https://xxiot.herokuapp.com/api/dataset/<id>
+- DELETE (UUID) https://xxiot.herokuapp.com/api/dataset/<id>
 
 **Structure**
 
+Sensor
 - id(Int)
-- value(String)
-- place(String)
+- UUID(String)
+- stype(String)
+
+Data
+- id(Int)
+- value(Float)
+- IP(String)
 - creation_date(DateTime)
+
   
 ## Test
 
@@ -39,8 +58,6 @@ Single Operation
 
 ### Curl
 
-- curl  -i -H "Content-Type: application/json" -X POST -d '{"place":"pxl","value":"20"}' https://xxiot.herokuapp.com/api/temps
-- curl  -i -H "Content-Type: application/json" -X GET  https://xxiot.herokuapp.com/api/temps
 
 ## Requirements
 
@@ -54,6 +71,7 @@ Single Operation
 - Flask-Migrate
 - Psycopg2-binary
 - Gunicorn
+- Gevent
 - requests
 
 ### Runtime Version

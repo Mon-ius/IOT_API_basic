@@ -8,6 +8,39 @@
 
 {% block body_attribs %} "agency" {% endblock %}
 {% block app_content %}
+<div class="modal fade" id="Modal" tabindex="-1" role="dialog" aria-labelledby="Modal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <form action="" method="post" class="form" role="form">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <h4 class="modal-title w-100 font-weight-bold">Filter</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body mx-3">
+
+                    <div class="md-form mb-5">
+                        <i class="fa fa-tag prefix grey-text"></i>
+
+                        <input type="text" id="min" class="form-control validate" name="min">
+                        <label data-error="wrong" data-success="right" for="form3">Min</label>
+                    </div>
+                    <div class="md-form mb-5">
+                        <i class="fa fa-tag prefix grey-text"></i>
+
+                        <input type="text" id="max" class="form-control validate" name="max">
+                        <label data-error="wrong" data-success="right" for="form3">Max</label>
+                    </div>
+                </div>
+
+                <div class="modal-footer d-flex justify-content-center">
+                    <a class="btn btn-info btn-block" type="submit" id="filterValue">Confirm</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 <section class="section feature-box my-5 pb-5">
     <hr>
     <div class="container">
@@ -18,15 +51,18 @@
             <tr>
                 <th class="th-sm">id
                     <i id="S-Id" class="fa fa-sort float-right" aria-hidden="true"></i>
+
                 </th>
                 <th class="th-sm">Place
                     <i  id="S-Place" class="fa fa-sort float-right" aria-hidden="true"></i>
                 </th>
                 <th class="th-sm">Value
                     <i id="S-Value" class="fa fa-sort float-right" aria-hidden="true"></i>
+<i id="F-Value" class="fa fa-filter float-left" aria-hidden="true" data-toggle="modal" data-target="#Modal"></i>
                 </th>
-                <th id="S-Time" class="th-sm">Time
-                    <i class="fa fa-sort float-right" aria-hidden="true"></i>
+                <th  class="th-sm">Time
+                <i id="F-Time"  class="fa fa-sort float-right" aria-hidden="true"></i>
+<i id="F-Time" class="fa fa-filter float-left" aria-hidden="true"></i>
                 </th>
             </tr>
         </thead>
@@ -158,6 +194,33 @@ $.ajax("{{ tmp }}?token="+op).done(
         }
     );
 cid++;
+});
+
+$("#filterValue").click(function () {
+var t = $('#tmp');
+var op = "v-filter";
+t.empty();
+
+var vmin = $("#min").val()
+var vmax = $("#max").val()
+
+$.ajax("{{ tmp }}?token="+op+"&max="+vmax+"&min="+vmin).done(
+        function(data) {
+        console.log(data);
+        console.log(data["temps"]);
+        console.log(data["temps"][0]);
+        $.each(data["temps"], function(i, item) {
+            var $trdata = $('<tr>').append(
+                $('<td>').text(item.id),
+                $('<td>').text(item.place),
+                $('<td>').text(item.value),
+                $('<td>').text(item.creation_date)
+            ); 
+            console.log($trdata)
+            $trdata.appendTo($('#tmp'));
+        });
+        }
+    );
 });
 
 $("#S-Place").click(function () {

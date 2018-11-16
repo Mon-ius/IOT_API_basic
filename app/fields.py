@@ -1,29 +1,18 @@
 from flask_restful import fields
 
-temp_fields = {
+sensor_fields = {
     'id': fields.Integer,
-    'value': fields.String,
-    'place': fields.String,
+    'uuid': fields.String,
+    'stype': fields.String
+}
+
+data_fields = {
+    'id': fields.Integer,
+    'value': fields.Flot,
+    'ip': fields.String,
     'creation_date': fields.DateTime
 }
 
-temps_fields = {
-    'id': fields.Integer,
-    'value': fields.String,
-    'place': fields.String,
-    'creation_date': fields.DateTime
-}
 
-light_fields = {
-    'id': fields.Integer,
-    'value': fields.String,
-    'place': fields.String,
-    'creation_date': fields.DateTime
-}
 
-lights_fields = {
-    'id': fields.Integer,
-    'value': fields.String,
-    'place': fields.String,
-    'creation_date': fields.DateTime
-}
+

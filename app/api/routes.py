@@ -1,163 +1,150 @@
 from flask import abort
 from flask_restful import Resource,  marshal, reqparse
-from app.fields import temp_fields, temps_fields,light_fields, lights_fields
-from app.models import Temperature,Light
+from app.fields import sensor_fields,data_fields
+from app.models import Sensor,Data
 from ext import  db,desc
 
 from datetime import datetime, timedelta, timezone
+from sqlalchemy import and_
 
+def abort_if_sensor_doesnt_exist(id):
+    ss = Sensor.query.filter_by(id=id).first()
+    if not ss:
+        abort(400, "Sensor {} doesn't exist".format(id))
+    return ss
 
-def abort_if_temp_doesnt_exist(id):
-    temp = Temperature.query.filter_by(id=id).first()
-    if not temp:
-        abort(400, "Temperature {} doesn't exist".format(id))
-    return temp
+def abort_if_data_doesnt_exist(id):
+    dat = Data.query.filter_by(id=id).first()
+    if not dat :
+        abort(400, "Data {} doesn't exist".format(id))
+    return dat
 
-def abort_if_light_doesnt_exist(id):
-    temp = Temperature.query.filter_by(id=id).first()
-    if not temp:
-        abort(400, "Light {} doesn't exist".format(id))
-    return temp
-
-class TemperatureAPI(Resource):
+class SensorAPI(Resource):
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('value', type=str, location='json')
-        self.reqparse.add_argument('place', type=str, location='json')
-        super(TemperatureAPI, self).__init__()
+        self.reqparse.add_argument('uuid', type=str, location='json')
+        self.reqparse.add_argument('type', type=str, location='json')
+        super(SensorAPI, self).__init__()
 
     def get(self, id):
-        temp = abort_if_temp_doesnt_exist(id)
-        return {'temp': marshal(temp, temp_fields)}
+        sensor = abort_if_sensor_doesnt_exist(id)
+        return {'sensor': marshal(sensor.__dict__, sensor_fields)}
 
     def put(self, id):
-        temp = abort_if_temp_doesnt_exist(id)
+        sensor = abort_if_sensor_doesnt_exist(id)
         args = self.reqparse.parse_args()
         for k, v in args.items():
             if v != None:
-                temp.__setattr__(k,v)
+                sensor.__setattr__(k,v)
         db.session.commit()
-        return {'temp': marshal(temp, temp_fields)}
+        return {'sensor': marshal(sensor.__dict__, sensor_fields)}
 
     def delete(self, id):
-        temp = abort_if_temp_doesnt_exist(id)
-        db.session.delete(temp)
+        sensor = abort_if_sensor_doesnt_exist(id)
+        db.session.delete(sensor)
         db.session.commit()
-        return {'result': marshal(temp, temp_fields)}
+        return {'result': marshal(sensor.__dict__, sensor_fields)}
 
 
-class TemperatureListAPI(Resource):
+class SensorListAPI(Resource):
 
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('value', type=str, location='json')
-        self.reqparse.add_argument('place', type=str, location='json')
-        self.reqparse.add_argument('token', type=str, help='No token provided', location='args')
-        super(TemperatureListAPI, self).__init__()
+        self.reqparse.add_argument('type', type=str, location='json')
+        super(SensorListAPI, self).__init__()
 
     def get(self):
         args = self.reqparse.parse_args()
-        ts = Temperature.query.all()
+        ts = Sensor.query.all()
         if not len(ts):
-            abort(400, "Temperature doesn't exist")
-        t_type = args['token']
-        if t_type:
-            if str(t_type)=='v-upper':
-                ts = Temperature.query.order_by(desc(Temperature.value)).all()
-            if str(t_type)=='v-down':
-                ts = Temperature.query.order_by(Temperature.value).all()
-            if str(t_type)=='i-upper':
-                ts = Temperature.query.order_by(desc(Temperature.id)).all()
-            if str(t_type)=='i-down':
-                ts = Temperature.query.order_by(Temperature.id).all()
-            if str(t_type)=='t-upper':
-                ts = Temperature.query.order_by(desc(Temperature.creation_date)).all()
-            if str(t_type)=='t-down':
-                ts = Temperature.query.order_by(Temperature.creation_date).all()
+            abort(400, "Sensor doesn't exist")
 
-        temp = list(map(lambda x: marshal(x.__dict__, temps_fields), ts))
-        return {'temps': temp}
+        sensor = list(map(lambda x: marshal(x.__dict__, sensor_fields), ts))
+        return {'sensors': sensor}
 
     def post(self):
         args = self.reqparse.parse_args()
         print(args)
         val = args
-        val.pop('token')
-        t = Temperature(**val)
+        t = Sensor(**val)
         db.session.add(t)
         db.session.commit()
         t.correct()
-        return {'temp': marshal(t.__dict__, temps_fields)}
+        return {'sensor': marshal(t.__dict__, sensor_fields)}
 
-class LightAPI(Resource):
+class DataAPI(Resource):
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('value', type=str, location='json')
-        self.reqparse.add_argument('place', type=str, location='json')
-        super(LightAPI, self).__init__()
+        self.reqparse.add_argument('uuid', type=str, location='json')
+        self.reqparse.add_argument('value', type=float, location='json')
+        super(DataAPI, self).__init__()
 
     def get(self, id):
-        light = abort_if_light_doesnt_exist(id)
-        return {'light': marshal(light, light_fields)}
+        data = abort_if_data_doesnt_exist(id)
+        return {'data': marshal(data.__dict__, data_fields)}
 
     def put(self, id):
-        light = abort_if_light_doesnt_exist(id)
+        data = abort_if_data_doesnt_exist(id)
         args = self.reqparse.parse_args()
         for k, v in args.items():
             if v != None:
-                light.__setattr__(k,v)
+                data.__setattr__(k,v)
         db.session.commit()
-        return {'light': marshal(light, light_fields)}
+        return {'data': marshal(data.__dict__, data_fields)}
 
     def delete(self, id):
-        light = abort_if_light_doesnt_exist(id)
-        db.session.delete(light)
+        data = abort_if_data_doesnt_exist(id)
+        db.session.delete(data)
         db.session.commit()
-        return {'result': marshal(light, light_fields)}
+        return {'result': marshal(data.__dict__, data_fields)}
 
 
-class LightListAPI(Resource):
+class DataListAPI(Resource):
 
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('value', type=str, location='json')
+        self.reqparse.add_argument('value', type=float, location='json')
+        self.reqparse.add_argument('uuid', type=str, location='json')
         self.reqparse.add_argument('token', type=str, help='No token provided', location='args')
-        self.reqparse.add_argument('place', type=str, location='json')
-        super(LightListAPI, self).__init__()
+        self.reqparse.add_argument('max', type=str, location='args')
+        self.reqparse.add_argument('min', type=str, location='args')
+        super(DataListAPI, self).__init__()
 
     def get(self):
         args = self.reqparse.parse_args()
-        ts = Light.query.all()
+        ts = data.query.all()
         if not len(ts):
-            abort(400, "Light doesn't exist")
+            abort(400, "data doesn't exist")
         t_type = args['token']
         if t_type:
             if str(t_type)=='v-upper':
-                ts = Light.query.order_by(desc(Light.value)).all()
+                ts = data.query.order_by(desc(data.value)).all()
             if str(t_type)=='v-down':
-                ts = Light.query.order_by(Light.value).all()
+                ts = data.query.order_by(data.value).all()
             if str(t_type)=='i-upper':
-                ts = Light.query.order_by(desc(Light.id)).all()
+                ts = data.query.order_by(desc(data.id)).all()
             if str(t_type)=='i-down':
-                ts = Light.query.order_by(Light.id).all()
+                ts = data.query.order_by(data.id).all()
             if str(t_type)=='t-upper':
-                ts = Light.query.order_by(desc(Light.creation_date)).all()
+                ts = data.query.order_by(desc(data.creation_date)).all()
             if str(t_type)=='t-down':
-                ts = Light.query.order_by(Light.creation_date).all()
+                ts = data.query.order_by(data.creation_date).all()
 
-        light = list(map(lambda x: marshal(x.__dict__, lights_fields), ts))
+        data = list(map(lambda x: marshal(x.__dict__, datas_fields), ts))
 
-        return {'lights': light}
+        return {'datas': data}
 
     def post(self):
         args = self.reqparse.parse_args()
         val = args
         val.pop('token')
-        t = Light(**val)
+        val.pop('min')
+        val.pop('max')
+        t = data(**val)
         db.session.add(t)
         db.session.commit()
         t.correct()
-        return {'light': marshal(t.__dict__, lights_fields)}
+        return {'data': marshal(t.__dict__, datas_fields)}
 
 
 class OpenRes(Resource):

@@ -1,0 +1,5 @@
+{
+    "python.formatting.provider": "black",
+    "python.linting.pylintEnabled": false,
+    "python.pythonPath": "/opt/anaconda3/envs/fk/bin/python"
+}
