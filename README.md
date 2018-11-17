@@ -70,25 +70,35 @@ Data
 ### Curl
 
 - add user(no auth)
+
 `curl  -i -H "Content-Type: application/json" -X POST -d '{"name":"Justest","email":"Justest@test.com","password":"Justest"}' https://xxiot.herokuapp.com/api/users`
 
 - add sensor(auth)
+
 `curl -u Justest:Justest -i -H "Content-Type: application/json" -X POST -d '{"stype":"temperature"}' https://xxiot.herokuapp.com/api/sensors`
 
 - add data(uuid,no auth)
+
 `curl  -i -H "Content-Type: application/json" -X POST -d '{"uuid": "53c103a1-fa69-4f6a-bc56-9df3ebe960dd","value":"20"}' https://xxiot.herokuapp.com/api/dataset`
 
 - get current user's sensor(auth)
+
 `curl  -u Justest:Justest -i  -X GET  https://xxiot.herokuapp.com/api/sensors`
+
 `curl  -u Justest:Justest -i  -X GET  https://xxiot.herokuapp.com/api/sensors/11`
 
 - get identified sensor's data(uuid)
+
 `curl  -i -H "Content-Type: application/json" -X GET -d '{"uuid": "53c103a1-fa69-4f6a-bc56-9df3ebe960dd"}' https://xxiot.herokuapp.com/api/dataset/5`
+
 `curl  -i -H "Content-Type: application/json" -X GET -d '{"uuid": "53c103a1-fa69-4f6a-bc56-9df3ebe960dd"}' https://xxiot.herokuapp.com/api/dataset`
+
 `curl  -i -H "Content-Type: application/json" -X GET -d '{"uuid": "53c103a1-fa69-4f6a-bc56-9df3ebe960dd"}' https://xxiot.herokuapp.com/api/dataset\?token\='v-upper'`
   
 ----
+
 `curl  -i https://xxiot.herokuapp.com/api/temps`
+
 `curl  -i -H "Content-Type: application/json" -X POST -d '{"value":"20","place":"home"}' https://xxiot.herokuapp.com/api/temps`
 
 

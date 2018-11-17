@@ -1,5 +1,6 @@
 Flask
 requests
+passlib
 python-dotenv
 # gevent preinstall
 # uwsgi preinstall 
