@@ -87,6 +87,9 @@ Data
 `curl  -i -H "Content-Type: application/json" -X GET -d '{"uuid": "53c103a1-fa69-4f6a-bc56-9df3ebe960dd"}' https://xxiot.herokuapp.com/api/dataset`
 `curl  -i -H "Content-Type: application/json" -X GET -d '{"uuid": "53c103a1-fa69-4f6a-bc56-9df3ebe960dd"}' https://xxiot.herokuapp.com/api/dataset\?token\='v-upper'`
   
+----
+`curl  -i https://xxiot.herokuapp.com/api/temps`
+`curl  -i -H "Content-Type: application/json" -X POST -d '{"value":"20","place":"home"}' https://xxiot.herokuapp.com/api/temps`
 
 
 

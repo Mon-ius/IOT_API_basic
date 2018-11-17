@@ -95,8 +95,8 @@ class TemperatureListAPI(Resource):
         ts = Temperature.query.all()
         if not len(ts):
             abort(400, "Temperature empty")
-
-        return {'Temps': ts}
+        temps = list(map(lambda x: marshal(x, temp_fields), ts))
+        return {'Temps': temps}
 
     def post(self):
         args = self.reqparse.parse_args()
