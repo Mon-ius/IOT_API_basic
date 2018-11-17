@@ -74,3 +74,14 @@ class Data(db.Model):
         return '<Data{} {} at {} in {}>'.format(self.id,self.value,str(self.creation_date)[:10],self.ip)
     def correct(self):
         self.id=self.id
+
+class Temperature(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    value = db.Column(db.Float())
+    place = db.Column(db.String(120))
+    creation_date = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return '<Temp{} at {}>'.format(self.value,self.place)
+    def correct(self):
+        self.id=self.id

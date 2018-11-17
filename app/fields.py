@@ -20,6 +20,13 @@ data_fields = {
     'creation_date': fields.DateTime
 }
 
+temp_fields = {
+    'id': fields.Integer,
+    'value': fields.Float,
+    'place': fields.String,
+    'creation_date': fields.DateTime
+}
+
 
 
 

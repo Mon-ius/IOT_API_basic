@@ -1,7 +1,7 @@
 from flask import abort,make_response,g,request
 from flask_restful import Resource,  marshal, reqparse
-from app.fields import sensor_fields,data_fields,user_fields
-from app.models import Sensor,Data,User
+from app.fields import user_fields,sensor_fields,data_fields,temp_fields
+from app.models import User,Sensor,Data,Temperature
 from ext import  auth,db,desc
 
 from datetime import datetime, timedelta, timezone
@@ -23,13 +23,17 @@ def abort_if_sensor_doesnt_exist(id):
     return s
 
 
-
 def abort_if_user_doesnt_exist(name):
     u = User.query.filter_by(name=name).first()
     if not u:
         abort(400, "User {} doesn't exist".format(name))
     return u
 
+def abort_if_temp_doesnt_exist(id):
+    t = Temperature.query.filter_by(id=id).first()
+    if not t:
+        abort(400, "Temp {} doesn't exist".format(id))
+    return t
 
 @auth.error_handler
 def unauthorized():
@@ -48,6 +52,63 @@ def verify_password(username_or_token, password):
     print("--- Login user : " + u.name)
     g.u = u
     return True
+
+
+class TemperatureAPI(Resource):
+    def __init__(self):
+        self.reqparse = reqparse.RequestParser()
+        self.reqparse.add_argument('id', type=str, location='json')
+        self.reqparse.add_argument('value', type=float, location='json')
+        super(TemperatureAPI, self).__init__()
+
+    def get(self, id):
+        tmp = abort_if_temp_doesnt_exist(id)
+
+        return {'Temp': marshal(tmp, temp_fields)}
+
+    def put(self, id):
+        args = self.reqparse.parse_args()
+        tmp = abort_if_temp_doesnt_exist(id)
+        for k, v in args.items():
+            if v != None:
+                tmp.__setattr__(k,v)
+        db.session.commit()
+        return {'Temp': marshal(tmp, temp_fields)}
+
+    def delete(self, id):
+        args = self.reqparse.parse_args()
+        tmp = abort_if_temp_doesnt_exist(id)
+        db.session.delete(tmp)
+        db.session.commit()
+        return {'result': marshal(tmp, temp_fields)}
+
+
+class TemperatureListAPI(Resource):
+
+    def __init__(self):
+        self.reqparse = reqparse.RequestParser()
+        self.reqparse.add_argument('value', type=float, location='json')
+        self.reqparse.add_argument('place',type=str, location='json')
+        super(TemperatureListAPI, self).__init__()
+
+    def get(self):
+        ts = Temperature.query.all()
+        if not len(ts):
+            abort(400, "Temperature empty")
+
+        return {'Temps': ts}
+
+    def post(self):
+        args = self.reqparse.parse_args()
+        
+        if not args['value'] or not args['place']:
+            abort(400, "Temperature error")
+        t = Temperature(**args)
+
+        db.session.add(t)
+        db.session.commit()
+        t.correct()
+        return {'Temp': marshal(t, temp_fields)}
 
 
 class UserAPI(Resource):
@@ -191,8 +252,8 @@ class DataListAPI(Resource):
         self.reqparse.add_argument('value', type=float, location='json')
         self.reqparse.add_argument('uuid', required=True,type=str, location='json')
         self.reqparse.add_argument('token', type=str, help='No token provided', location='args')
-        self.reqparse.add_argument('max', type=str, location='args')
-        self.reqparse.add_argument('min', type=str, location='args')
+        self.reqparse.add_argument('max', type=float, location='args')
+        self.reqparse.add_argument('min', type=float, location='args')
         super(DataListAPI, self).__init__()
 
     def get(self):
@@ -217,6 +278,13 @@ class DataListAPI(Resource):
                 d = ts.order_by(desc(Data.creation_date)).all()
             if str(t_type)=='t-down':
                 d = ts.order_by(Data.creation_date).all()
+            if str(t_type)=='v-filter':
+                vmin = args['min']
+                vmax = args['max']
+                if not vmin or not vmax:
+                    vmin = 0
+                    vmax = 65535
+                d = ts.filter(and_(Data.value>=vmin,Data.value<=vmax)).order_by(Data.value).all()
         d = ts.all()
         data = list(map(lambda x: marshal(x, data_fields), d))
 
@@ -235,6 +303,7 @@ class DataListAPI(Resource):
         db.session.commit()
         t.correct()
         return {'data': marshal(t, data_fields)}
+
 
 
 class OpenRes(Resource):
