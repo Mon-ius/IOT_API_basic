@@ -14,7 +14,7 @@ def create_app(config_class=Config):
     bootstrap.init_app(app)  # Bootstrap init
 
     from app.api import bp as api_bp  
-    from app.api.routes import SensorListAPI,SensorAPI,DataListAPI,DataAPI,OpenRes,UserAPI,TemperatureAPI,TemperatureListAPI
+    from app.api.routes import TemperatureListAPI,TemperatureAPI,SensorListAPI,SensorAPI,DataListAPI,DataAPI,OpenRes,UserAPI
 
     api_temp = Api(api_bp)
 

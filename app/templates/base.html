@@ -92,40 +92,7 @@
 
 {%- block content %}
 {{super()}}
-<div class="modal fade" id="Login" tabindex="-1" role="dialog" aria-labelledby="Modal" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <form action="" method="post" class="form" role="form">
-            <div class="modal-content">
-                <div class="modal-header text-center">
-                    <h4 class="modal-title w-100 font-weight-bold">Sign in</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body mx-3">
-
-                    <div class="md-form mb-5">
-                        <i class="fa fa-user prefix grey-text"></i>
-
-                        <input type="text" id="name" class="form-control validate" name="name">
-                        <label data-error="wrong" data-success="right" for="name">Name</label>
-                    </div>
-
-                    <div class="md-form mb-5">
-                        <i class="fa fa-lock prefix grey-text"></i>
-
-                        <input type="password" id="max" class="form-control validate" name="max">
-                        <label data-error="wrong" data-success="right" for="form3">Password</label>
-                    </div>
-                </div>
-
-                <div class="modal-footer d-flex justify-content-center">
-                    <a class="btn btn-info btn-block" type="submit" id="loginUser">Submit</a>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
+{% include '_modal.html' %}
 {% block app_content %}{% endblock %}
 
 {%- block footer %}
@@ -144,6 +111,7 @@
 
 {% block scripts %}
 <script src="{{ url_for( 'static',filename='js/jquery-3.3.1.min.js' )}}"></script>
+<script src="{{ url_for( 'static',filename='js/jquery.base64.min.js' )}}"></script>
 <script src="{{ url_for( 'static',filename='js/popper.min.js' )}}"></script>
 <script src="{{ url_for( 'static',filename='js/bootstrap.min.js' )}}"></script>
 <script src="{{ url_for( 'static',filename='js/mdb.min.js' )}}"></script>
@@ -151,36 +119,61 @@
 <script>
     $(document).ready(function () {
         $('.mdb-select').material_select();
-        
         checkSession();
     });
+    function LoginUser(data){
+        $.ajax({
+            type: 'put',
+            url: '{{ auth }}',
+            data: JSON.stringify(data),
+            contentType: "application/json",
+            crossDomain: true,
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('Authorization', 'Basic '+data);
+            },
+            success: function (res) {
+                Cookies.set('token', res["token"]);
+                $('#Login').modal('hide');
+                alert("success");
+            }
+        });
+    }
+    function SignUpUser(data){
+        $.ajax({
+            type: 'post',
+            url: '{{ auth }}',
+            data: JSON.stringify(data),
+            contentType: "application/json",
+            crossDomain: true,
+            success: function (res) {
+                $('#Signup').modal('hide');
+                alert("user "+res['User']['name']+" created success");
+            }
+        });
+    }
     function checkSession() {
         var x = Cookies.get('ss');
         if(!x){
-            $('#Login').modal('show');
+            $('#Signup').modal('show');
         }
         else{
-        $.ajax("{{ usr }}").done(
-        function(data) {
-        console.log(data);
-        console.log(data['user']);
+            $('#Login').modal('show');
 
-        $.each(data["temps"], function(i, item) {
-            var $trdata = $('<tr>').append(
-                $('<td>').text(item.id),
-                $('<td>').text(item.place),
-                $('<td>').text(item.value),
-                $('<td>').text(item.creation_date)
-            ); 
-            console.log($trdata)
-            $trdata.appendTo($('#tmp'));
-        });
+        };
+    };
+    $("#loginUser").click(//Auth
+        function () {
+        var data = $.base64.encode($("#l-name").val()+":"+$("#l-password").val())
+        LoginUser(data);
+    });
+    $("#signUser").click(function () {
+        var data = {
+            "name":$("#r-name").val(),
+            "email":$("#r-email").val(),
+            "password":$("#r-password").val(),
         }
-    );
-});
-        }
-
-    }
+        SignUpUser(data);
+    });
     // initialize scrollspy
     $('body').scrollspy({
         target: '.dotted-scrollspy'

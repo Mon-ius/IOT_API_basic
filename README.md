@@ -97,6 +97,8 @@ Data
   
 ----
 
+- original feature
+
 `curl  -i https://xxiot.herokuapp.com/api/temps`
 
 `curl  -i -H "Content-Type: application/json" -X POST -d '{"value":"20","place":"home"}' https://xxiot.herokuapp.com/api/temps`

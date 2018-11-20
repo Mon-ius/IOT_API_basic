@@ -82,7 +82,6 @@ class TemperatureAPI(Resource):
         db.session.commit()
         return {'result': marshal(tmp, temp_fields)}
 
-
 class TemperatureListAPI(Resource):
 
     def __init__(self):
