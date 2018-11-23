@@ -33,19 +33,9 @@ def mannual():
 def table():
     auth = url_for('main.index',  _external=True)+'api/users'
     sensor = url_for('main.index',  _external=True)+'api/sensors'
-    dataset = url_for('main.index',  _external=True)+'test'
+    dataset = url_for('main.index',  _external=True)+'api/dataset'
     tmp  = url_for('main.index',  _external=True)+'api/temps'
     return render_template('main/table.html', title='Table',tmp=tmp,auth=auth,sensor=sensor,dataset=dataset)
-
-@bp.route('/test', methods=['GET', 'POST'])
-def test():
-    print(request.headers)
-    print(request.form)
-
-    # print(request.data)
-    print(request.get_json())
-    # print(request.args)
-    return "HELLO"
 
 
 

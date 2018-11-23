@@ -2,10 +2,10 @@ from flask import abort,make_response,g,request,jsonify
 from flask_restful import Resource,  marshal, reqparse
 from app.fields import user_fields,sensor_fields,data_fields,temp_fields
 from app.models import User,Sensor,Data,Temperature
-from ext import  auth,db,desc
+from ext import  auth,db,desc,and_
 
 from datetime import datetime, timedelta, timezone
-from sqlalchemy import and_
+
 
 def abort_if_data_doesnt_exist(id,uuid):
     s = Sensor.query.filter_by(uuid=uuid).first()
@@ -217,7 +217,7 @@ class SensorListAPI(Resource):
 class DataAPI(Resource):
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('uuid', type=str, location='json')
+        self.reqparse.add_argument('uuid', type=str, location='headers')
         self.reqparse.add_argument('value', type=float, location='json')
         super(DataAPI, self).__init__()
 
@@ -249,10 +249,8 @@ class DataListAPI(Resource):
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
         self.reqparse.add_argument('value', type=float, location='json')
-        self.reqparse.add_argument('uuid',type=str, location='json')
+        self.reqparse.add_argument('uuid',type=str, location='headers')
         self.reqparse.add_argument('token', type=str, location='args')
-        self.reqparse.add_argument('max', type=float, location='args')
-        self.reqparse.add_argument('min', type=float, location='args')
         super(DataListAPI, self).__init__()
 
     def get(self):
@@ -267,28 +265,35 @@ class DataListAPI(Resource):
             abort(400, "data doesn't exist")
         t_type = args['token']
         if t_type:
-            if str(t_type)=='v-upper':
+            if str(t_type)=='v-desc':
                 d = ts.order_by(desc(Data.value)).all()
-            if str(t_type)=='v-down':
+            if str(t_type)=='v-asc':
                 d = ts.order_by(Data.value).all()
-            if str(t_type)=='i-upper':
+            if str(t_type)=='i-desc':
                 d = ts.order_by(desc(Data.id)).all()
-            if str(t_type)=='i-down':
+            if str(t_type)=='i-asc':
                 d = ts.order_by(Data.id).all()
-            if str(t_type)=='t-upper':
+            if str(t_type)=='p-desc':
+                d = ts.order_by(desc(Data.ip)).all()
+            if str(t_type)=='p-asc':
+                d = ts.order_by(Data.ip).all()
+            if str(t_type)=='t-desc':
                 d = ts.order_by(desc(Data.creation_date)).all()
-            if str(t_type)=='t-down':
+            if str(t_type)=='t-asc':
                 d = ts.order_by(Data.creation_date).all()
-            if str(t_type)=='v-filter':
-                vmin = args['min']
-                vmax = args['max']
+            if str(t_type)[:3]=='vf-':
+                vmin = float(t_type.split("-")[1])
+                vmax = float(t_type.split("-")[2])
+                print(vmin)
+                print(vmax)
                 if not vmin or not vmax:
                     vmin = 0
                     vmax = 65535
                 d = ts.filter(and_(Data.value>=vmin,Data.value<=vmax)).order_by(Data.value).all()
-        d = ts.all()
+        else:
+            d = ts.all()
         data = list(map(lambda x: marshal(x, data_fields), d))
-
+        # print(data)
         return {'dataset': data}
 
     def post(self):

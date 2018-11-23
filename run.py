@@ -1,12 +1,17 @@
 from app import create_app
 from app.models import User,Data,Sensor
-from ext import db
+from ext import db,desc
 import click
 app = create_app()
 
+def clearDB():
+    Data.query.delete()
+    Sensor.query.delete()
+    User.query.delete()
+    db.session.commit()
 @app.shell_context_processor
 def make_shell_context():
-    return {'db': db, 'User': User, 'Data': Data, 'Sensor': Sensor}
+    return {'db': db, 'User': User, 'Sensor': Sensor, 'Data': Data,'cl':clearDB}
 
 if __name__ == '__main__': 
     app.run(debug=True)  

@@ -8,76 +8,58 @@
 
 {% block body_attribs %} "agency" {% endblock %}
 {% block app_content %}
-<div class="modal fade" id="Modal" tabindex="-1" role="dialog" aria-labelledby="Modal" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <form action="" method="post" class="form" role="form">
-            <div class="modal-content">
-                <div class="modal-header text-center">
-                    <h4 class="modal-title w-100 font-weight-bold">Filter</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body mx-3">
 
-                    <div class="md-form mb-5">
-                        <i class="fa fa-tag prefix grey-text"></i>
-
-                        <input type="text" id="min" class="form-control validate" name="min">
-                        <label data-error="wrong" data-success="right" for="form3">Min</label>
-                    </div>
-                    <div class="md-form mb-5">
-                        <i class="fa fa-tag prefix grey-text"></i>
-
-                        <input type="text" id="max" class="form-control validate" name="max">
-                        <label data-error="wrong" data-success="right" for="form3">Max</label>
-                    </div>
-                </div>
-
-                <div class="modal-footer d-flex justify-content-center">
-                    <a class="btn btn-info btn-block" type="submit" id="filterValue">Confirm</a>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
 <section class="section feature-box my-5 pb-5">
     <hr>
     <div class="container">
     <h4 class="h1-responsive font-weight-bold text-center my-5">Data Table View</h4>
     <div class="form-inline clearfix">
         <!-- Default input -->
-        <select class="browser-default custom-select mb-2 mr-sm-2 float-left" id="sensors">
-            <option value="" selected>Select Sensor</option>
-        </select>
         <div class="input-group mb-2 mr-sm-5 col-5 float-right" >
             <div class="input-group-prepend">
             <div class="input-group-text">@</div>
             </div>
             <input type="text" class="form-control py-0" id="sensorid" placeholder="UUID">
         </div>
+        <select class="browser-default custom-select mb-2 mr-sm-2 float-left" id="sensors">
+            <option value="" selected>Select Sensor</option>
+        </select>
+    </div>
+    <div class="form-inline clearfix">
+        <!-- Default input -->
+
+        <div class="input-group mb-2 mr-sm-5 col-5 float-right" >
+        
+            <div   class="input-group-prepend">
+                <div class="input-group-text">
+                    <i id="vf-" class="fa fa-filter float-left sortbar"></i>
+                </div>
+            </div>
+            <input type="text" class="form-control py-0" id="vmin" placeholder="min">
+            <input type="text" class="form-control py-0" id="vmax" placeholder="max">
+        </div>
     </div>
     <hr class="my-5">
-    <table id="Temperature" class="table table-striped table-bordered" cellspacing="0" width="100%">
+    <table id="DaTA" class="table table-striped table-bordered" cellspacing="0" width="100%">
         <thead>
             <tr>
                 <th class="th-sm">id
-                    <i id="S-Id" class="fa fa-sort float-right" aria-hidden="true"></i>
+                    <i id="i-" class="fa fa-sort float-right sortbar" aria-hidden="true"></i>
 
                 </th>
                 <th class="th-sm">Value
-                    <i  id="S-Place" class="fa fa-sort float-right" aria-hidden="true"></i>
-                    <i id="F-Value" class="fa fa-filter float-left" aria-hidden="true" data-toggle="modal" data-target="#Modal"></i>
+                    <i id="v-" class="fa fa-sort float-right sortbar" aria-hidden="true"></i>
+                    
                 </th>
                 <th class="th-sm">Time
-                    <i id="S-Value" class="fa fa-sort float-right" aria-hidden="true"></i>
+                    <i id="t-" class="fa fa-sort float-right sortbar" aria-hidden="true"></i>
                 </th>
                 <th  class="th-sm">IP
-                    <i id="S-Time"  class="fa fa-sort float-right" aria-hidden="true"></i>
+                    <i id="p-"  class="fa fa-sort float-right sortbar" aria-hidden="true"></i>
                 </th>
             </tr>
         </thead>
-        <tbody id="tmp">    
+        <tbody id="dataset">    
         </tbody>
         <tfoot>
             <tr>
@@ -129,159 +111,82 @@
             }
         });
     }
-    function appenData(uuid){
-        var x = Cookies.get('token');
-        var data = {
-            "uuid":uuid,
-            "value":"56"
-        }
-        var xhr = new XMLHttpRequest();
-        
-        xhr.open('GET', '{{ dataset }}');
-        
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.onload = function() {
-            if (xhr.status === 200 && xhr.responseText !== newName) {
-                alert('Something went wrong.  Name is now ' + xhr.responseText);
-            }
-            else if (xhr.status !== 200) {
-                alert('Request failed.  Returned status of ' + xhr.status);
-            }
+    function appenData(uuid,token){
+        console.log(token);
+        payload = {
+            "token":token || ""
         };
-        
-        xhr.send(JSON.stringify(data));
-
-            
+        $.ajax({
+            url:  '{{ dataset }}',
+            type: "get",
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('uuid', uuid);
+            },
+            data:payload,
+            success: 
+                function(data) {
+                    console.log(data)
+                    $.each(data["dataset"], function(i, item) {
+                        var $trdata = $('<tr>').append(
+                            $('<td>').text(item.id),
+                            $('<td>').text(item.value),
+                            $('<td>').text(moment(item.creation_date).format('lll')),
+                            $('<td>').text(item.ip)
+                        ); 
+                        $trdata.appendTo($('#dataset'));
+                        console.log($trdata)
+                    });
+                },            
+            fail: function(xhr, textStatus, errorThrown){
+                alert('request failed');
+            },
+            error: function(xhr, status, error){
+                alert('request failed');
+            }
+        });
     }
 
-var cid = 0;
-var cvalue = 0;
-var ctime = 0;
+    var count = 0;
+    window.onload = function(){
+        detectSensor();
+    }
 
-window.onload = function(){
-detectSensor();
+    $( "#sensors" ).change(function() {
+        var k=$(this).find(":selected");
+        var sid=$('#sensorid');
+        sid.val(k.val());
+        $('#dataset').empty();
+        appenData(k.val());
+    });
 
-}
-$( "#sensors" ).change(function() {
-    var k=$(this).find(":selected");
-    var sid=$('#sensorid');
-    sid.val(k.val());
-    appenData(k.val());
-});
+    $( "#sensorid" ).change(function() {
+        var k=$(this);
+        appenData(k.val());
+    });
 
-$( "#sensorid" ).change(function() {
-    var k=$(this);
+    $(".sortbar").click(function () {
+    var bar = $(this).attr("id");
+    var k=$('#sensorid');
+    
+    token = bar+"desc"
+    if(window.count%2==0)
+        token= bar+"asc"
+    if(bar=="vf-"){
+        var max = $('#vmax').val();
+        var min = $('#vmin').val();
+        console.log(max);
+        console.log(min);
 
-});
-$("#S-Value").click(function () {
-var t = $('#tmp');
-var op = "v-upper";
-t.empty();
-console.log(window.cvalue);
-if(window.cvalue%2==0)
-op="v-down";
-$.ajax("{{ tmp }}?token="+op).done(
-        function(data) {
-        console.log(data);
-        console.log(data["temps"]);
-        console.log(data["temps"][0]);
-        $.each(data["temps"], function(i, item) {
-            var $trdata = $('<tr>').append(
-                $('<td>').text(item.id),
-                $('<td>').text(item.place),
-                $('<td>').text(item.value),
-                $('<td>').text(item.creation_date)
-            ); 
-            console.log($trdata)
-            $trdata.appendTo($('#tmp'));
-        });
-        }
-    );
-cvalue++;
-});
-$("#S-Time").click(function () {
-var t = $('#tmp');
-var op = "t-upper";
-t.empty();
-console.log(window.ctime);
-if(window.ctime%2==0)
-op="t-down";
-$.ajax("{{ tmp }}?token="+op).done(
-        function(data) {
-        console.log(data);
-        console.log(data["temps"]);
-        console.log(data["temps"][0]);
-        $.each(data["temps"], function(i, item) {
-            var $trdata = $('<tr>').append(
-                $('<td>').text(item.id),
-                $('<td>').text(item.place),
-                $('<td>').text(item.value),
-                $('<td>').text(item.creation_date)
-            ); 
-            console.log($trdata)
-            $trdata.appendTo($('#tmp'));
-        });
-        }
-    );
-cid++;
-});
-$("#S-Id").click(function () {
-var t = $('#tmp');
-var op = "i-upper";
-t.empty();
-console.log(window.cid);
-if(window.cid%2==0)
-op="i-down";
-$.ajax("{{ tmp }}?token="+op).done(
-        function(data) {
-        console.log(data);
-        console.log(data["temps"]);
-        console.log(data["temps"][0]);
-        $.each(data["temps"], function(i, item) {
-            var $trdata = $('<tr>').append(
-                $('<td>').text(item.id),
-                $('<td>').text(item.place),
-                $('<td>').text(item.value),
-                $('<td>').text(item.creation_date)
-            ); 
-            console.log($trdata)
-            $trdata.appendTo($('#tmp'));
-        });
-        }
-    );
-cid++;
-});
+        if (min[0]=='-' || max[0]=='-')
+            alert("not allowed");
+        token = bar+min+"-"+max;
+    }
+    console.log(window.count);
 
-$("#filterValue").click(function () {
-var t = $('#tmp');
-var op = "v-filter";
-t.empty();
-
-var vmin = $("#min").val()
-var vmax = $("#max").val()
-
-$.ajax("{{ tmp }}?token="+op+"&max="+vmax+"&min="+vmin).done(
-        function(data) {
-        console.log(data);
-        console.log(data["temps"]);
-        console.log(data["temps"][0]);
-        $.each(data["temps"], function(i, item) {
-            var $trdata = $('<tr>').append(
-                $('<td>').text(item.id),
-                $('<td>').text(item.place),
-                $('<td>').text(item.value),
-                $('<td>').text(item.creation_date)
-            ); 
-            console.log($trdata)
-            $trdata.appendTo($('#tmp'));
-        });
-        }
-    );
-});
-
-$("#S-Place").click(function () {
-alert("Indeed, there should  be only your data here :-)");
-});
+    $('#dataset').empty();
+    appenData(k.val(),token=token);
+    count++;
+    });
 
 </script>
 {% endblock %}

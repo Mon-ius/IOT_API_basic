@@ -57,7 +57,6 @@
     function DatasetAdd(uuid,value,e){
         var x = Cookies.get('token');
         var data = {
-            "uuid":uuid,
             "value":value
         }
         $.ajax({
@@ -66,6 +65,9 @@
             data: JSON.stringify(data),
             contentType: "application/json",
             crossDomain: true,
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('uuid', uuid);
+            },
             success: function (res) {
                 e.append("<div class='alert alert-secondary' role='alert'>New Data Collected</div>");
                 console.log("data added");
