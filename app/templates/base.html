@@ -116,12 +116,18 @@
 <script src="{{ url_for( 'static',filename='js/bootstrap.min.js' )}}"></script>
 <script src="{{ url_for( 'static',filename='js/mdb.min.js' )}}"></script>
 <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+{%- block init_script %}
+<script>
+    $(document).ready(function () {
+        checkSession();
+    });
+</script>
+{%- endblock init_script %}
 <script>
     $(document).ready(function () {
         $('.mdb-select').material_select();
-        checkSession();
     });
-    function LoginUser(data){
+    function GetUser(data){
         $.ajax({
             type: 'put',
             url: '{{ auth }}',
@@ -132,12 +138,42 @@
                 xhr.setRequestHeader('Authorization', 'Basic '+data);
             },
             success: function (res) {
-                Cookies.set('token', res["token"]);
+                var token = $.base64.encode(res["token"]+":"+"");
+                Cookies.set('token', token);
                 $('#Login').modal('hide');
                 alert("success");
+                location.reload();
+            },
+            fail: function(xhr, textStatus, errorThrown){
+                alert('request failed');
             }
         });
     }
+    function LoginUser(data){
+        $.ajax({
+            type: 'get',
+            url: '{{ auth }}',
+            crossDomain: true,
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('Authorization', 'Basic '+data);
+            },
+            success: function (res) {
+                if(!res['User']['id']){
+                    alert("Login expired");
+                    $('#Login').modal('show');
+                }
+                console.log("session verified");
+            },            
+            fail: function(xhr, textStatus, errorThrown){
+                alert('request failed');
+            },
+            error: function(xhr, status, error){
+                alert("Login expired");
+                $('#Login').modal('show');
+            }
+        });
+    }
+
     function SignUpUser(data){
         $.ajax({
             type: 'post',
@@ -148,23 +184,25 @@
             success: function (res) {
                 $('#Signup').modal('hide');
                 alert("user "+res['User']['name']+" created success");
+            },            
+            fail: function(xhr, textStatus, errorThrown){
+                alert('request failed');
             }
         });
     }
     function checkSession() {
-        var x = Cookies.get('ss');
+        var x = Cookies.get('token');
         if(!x){
-            $('#Signup').modal('show');
+            $('#Login').modal('show');
         }
         else{
-            $('#Login').modal('show');
-
+            LoginUser(x);
         };
     };
     $("#loginUser").click(//Auth
         function () {
         var data = $.base64.encode($("#l-name").val()+":"+$("#l-password").val())
-        LoginUser(data);
+        GetUser(data);
     });
     $("#signUser").click(function () {
         var data = {
@@ -173,6 +211,16 @@
             "password":$("#r-password").val(),
         }
         SignUpUser(data);
+    });
+    $("#loginSwitch").click(//Auth
+        function () {
+            $('#Signup').modal('hide');
+            $('#Login').modal('show');
+    });
+    $("#signSwitch").click(
+        function () {
+            $('#Login').modal('hide');
+            $('#Signup').modal('show');
     });
     // initialize scrollspy
     $('body').scrollspy({

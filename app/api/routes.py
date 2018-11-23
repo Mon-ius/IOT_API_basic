@@ -1,4 +1,4 @@
-from flask import abort,make_response,g,request
+from flask import abort,make_response,g,request,jsonify
 from flask_restful import Resource,  marshal, reqparse
 from app.fields import user_fields,sensor_fields,data_fields,temp_fields
 from app.models import User,Sensor,Data,Temperature
@@ -124,7 +124,7 @@ class UserAPI(Resource):
     @auth.login_required
     def get(self):
         u = g.u 
-        print(u)
+        print("User {} auth success".format(u.id))
         return {'User': marshal(u, user_fields)}
 
     @auth.login_required
@@ -193,18 +193,18 @@ class SensorListAPI(Resource):
     @auth.login_required
     def get(self):
         args = self.reqparse.parse_args()
-        ts = Sensor.query.all()
+        u =g.u
+        ts = u.sensors.all()
         if not len(ts):
             abort(400, "Sensor doesn't exist")
-
         sensor = list(map(lambda x: marshal(x, sensor_fields), ts))
         return {'sensors': sensor}
 
     @auth.login_required
     def post(self):
         args = self.reqparse.parse_args()
+        print(args)
         u = g.u
-        print(u)
         if not args['stype']:
             abort(400, "Sensor missing stype")
         t = Sensor(owner=u,**args)
@@ -249,14 +249,16 @@ class DataListAPI(Resource):
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
         self.reqparse.add_argument('value', type=float, location='json')
-        self.reqparse.add_argument('uuid', required=True,type=str, location='json')
-        self.reqparse.add_argument('token', type=str, help='No token provided', location='args')
+        self.reqparse.add_argument('uuid',type=str, location='json')
+        self.reqparse.add_argument('token', type=str, location='args')
         self.reqparse.add_argument('max', type=float, location='args')
         self.reqparse.add_argument('min', type=float, location='args')
         super(DataListAPI, self).__init__()
 
     def get(self):
         args = self.reqparse.parse_args()
+        print(self.reqparse)
+        print(args)
         s = Sensor.query.filter_by(uuid=args['uuid']).first()
         if not s:
             abort(400, "Sensor error")

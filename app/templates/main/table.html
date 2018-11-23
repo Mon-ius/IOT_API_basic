@@ -45,6 +45,18 @@
     <hr>
     <div class="container">
     <h4 class="h1-responsive font-weight-bold text-center my-5">Data Table View</h4>
+    <div class="form-inline clearfix">
+        <!-- Default input -->
+        <select class="browser-default custom-select mb-2 mr-sm-2 float-left" id="sensors">
+            <option value="" selected>Select Sensor</option>
+        </select>
+        <div class="input-group mb-2 mr-sm-5 col-5 float-right" >
+            <div class="input-group-prepend">
+            <div class="input-group-text">@</div>
+            </div>
+            <input type="text" class="form-control py-0" id="sensorid" placeholder="UUID">
+        </div>
+    </div>
     <hr class="my-5">
     <table id="Temperature" class="table table-striped table-bordered" cellspacing="0" width="100%">
         <thead>
@@ -53,16 +65,15 @@
                     <i id="S-Id" class="fa fa-sort float-right" aria-hidden="true"></i>
 
                 </th>
-                <th class="th-sm">Place
-                    <i  id="S-Place" class="fa fa-sort float-right" aria-hidden="true"></i>
-                </th>
                 <th class="th-sm">Value
-                    <i id="S-Value" class="fa fa-sort float-right" aria-hidden="true"></i>
+                    <i  id="S-Place" class="fa fa-sort float-right" aria-hidden="true"></i>
                     <i id="F-Value" class="fa fa-filter float-left" aria-hidden="true" data-toggle="modal" data-target="#Modal"></i>
                 </th>
-                <th  class="th-sm">Time
+                <th class="th-sm">Time
+                    <i id="S-Value" class="fa fa-sort float-right" aria-hidden="true"></i>
+                </th>
+                <th  class="th-sm">IP
                     <i id="S-Time"  class="fa fa-sort float-right" aria-hidden="true"></i>
-                    <i id="F-Time" class="fa fa-filter float-left" aria-hidden="true"></i>
                 </th>
             </tr>
         </thead>
@@ -72,11 +83,11 @@
             <tr>
                 <th>Id
                 </th>
-                <th>Place
-                </th>
                 <th>Value
                 </th>
                 <th>Time
+                </th>
+                <th>IP
                 </th>
             </tr>
         </tfoot>
@@ -91,32 +102,77 @@
 {% block scripts %}
 {{ super() }}
 <script>
+    function detectSensor(){
+        var x = Cookies.get('token');
+        
+        $.ajax({
+            type: 'get',
+            url: '{{ sensor }}',
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('Authorization', 'Basic '+x);
+            },
+            success: 
+                function(data) {
+                    console.log(data);
+                    $.each(data["sensors"], function(i, item) {
+                        var $option = $('<option>').text(item.stype);
+                        $option.attr("value",item.uuid);
+                        console.log($option);
+                        $option.appendTo($('#sensors'));
+                    });
+                },            
+            fail: function(xhr, textStatus, errorThrown){
+                alert('request failed');
+            },
+            error: function(xhr, status, error){
+                alert('request failed');
+            }
+        });
+    }
+    function appenData(uuid){
+        var x = Cookies.get('token');
+        var data = {
+            "uuid":uuid,
+            "value":"56"
+        }
+        var xhr = new XMLHttpRequest();
+        
+        xhr.open('GET', '{{ dataset }}');
+        
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onload = function() {
+            if (xhr.status === 200 && xhr.responseText !== newName) {
+                alert('Something went wrong.  Name is now ' + xhr.responseText);
+            }
+            else if (xhr.status !== 200) {
+                alert('Request failed.  Returned status of ' + xhr.status);
+            }
+        };
+        
+        xhr.send(JSON.stringify(data));
+
+            
+    }
+
 var cid = 0;
 var cvalue = 0;
 var ctime = 0;
 
 window.onload = function(){
-        console.log("begin");
-        $.ajax("{{ tmp }}").done(
-        function(data) {
-        console.log(data);
-        console.log(data["temps"]);
-        console.log(data["temps"][0]);
-        $.each(data["temps"], function(i, item) {
-            var $trdata = $('<tr>').append(
-                $('<td>').text(item.id),
-                $('<td>').text(item.place),
-                $('<td>').text(item.value),
-                $('<td>').text(item.creation_date)
-            ); 
-            console.log($trdata)
-            $trdata.appendTo($('#tmp'));
-        });
-        }
-    );
-
+detectSensor();
 
 }
+$( "#sensors" ).change(function() {
+    var k=$(this).find(":selected");
+    var sid=$('#sensorid');
+    sid.val(k.val());
+    appenData(k.val());
+});
+
+$( "#sensorid" ).change(function() {
+    var k=$(this);
+
+});
 $("#S-Value").click(function () {
 var t = $('#tmp');
 var op = "v-upper";

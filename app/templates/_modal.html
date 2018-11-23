@@ -3,7 +3,7 @@
         <form action="" method="post" class="form" role="form">
             <div class="modal-content">
                 <div class="modal-header text-center">
-                    <h4 class="modal-title w-100 font-weight-bold">Sign in</h4>
+                    <h4 class="modal-title w-100 font-weight-bold">Login</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -23,11 +23,17 @@
                         <input type="password" id="l-password" class="form-control validate" name="l-password">
                         <label data-error="wrong" data-success="right" for="l-password">Password</label>
                     </div>
+                    <div class="options text-right">
+                        <p class="pt-1">Test account : password/admin:) </p>
+                        <p class="pt-1">No account? <a id="signSwitch" class="blue-text">Sign Up</a></p>
+                    </div>
+                    
                 </div>
 
                 <div class="modal-footer d-flex justify-content-center">
                     <a class="btn btn-info btn-block" type="submit" id="loginUser">Submit</a>
                 </div>
+
             </div>
         </form>
     </div>
@@ -38,7 +44,7 @@
         <form action="" method="post" class="form" role="form">
             <div class="modal-content">
                 <div class="modal-header text-center">
-                    <h4 class="modal-title w-100 font-weight-bold">Sign in</h4>
+                    <h4 class="modal-title w-100 font-weight-bold">Sign up</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -52,7 +58,7 @@
                         <label data-error="wrong" data-success="right" for="r-name">Name</label>
                     </div>
                     <div class="md-form mb-5">
-                        <i class="fa fa-user prefix grey-text"></i>
+                        <i class="fa fa-envelope prefix grey-text"></i>
 
                         <input type="text" id="r-email"  class="form-control validate" name="r-email">
                         <label type="email" data-error="wrong" data-success="right" for="r-email">E-mail</label>
@@ -64,6 +70,9 @@
                         <input type="password" id="r-password" class="form-control validate" name="r-password">
                         <label data-error="wrong" data-success="right" for="r-password">Password</label>
                     </div>
+                    <div class="options text-right">
+                        <p class="pt-1">Already have an account? <a id="loginSwitch" class="blue-text">Log In</a></p>
+                    </div>
                 </div>
 
                 <div class="modal-footer d-flex justify-content-center">
@@ -72,4 +81,35 @@
             </div>
         </form>
     </div>
+</div>
+
+<div class="modal fade" id="manualTemp" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-sm modal-notify modal-danger" role="document">
+    <!--Content-->
+    <div class="modal-content text-center">
+      <!--Header-->
+      <div class="modal-header d-flex justify-content-center">
+        <p class="heading">Are you sure?</p>
+      </div>
+        <div class="modal-body">
+          <p class="pt-5">Rigister as <span id="S-area"></span> Sensor</p>
+        </div>
+        <div class="modal-body">
+          <p class="pt-1">Then do brilliant things</p>
+        </div>
+      <div class="modal-body">
+
+        <i class="fa fa-times fa-4x animated rotateIn"></i>
+
+      </div>
+
+      <!--Footer-->
+      <div class="modal-footer flex-center">
+        <button id="mannualConfirm" href="" class="btn  btn-outline-danger">Yes</button>
+        <a type="button" class="btn  btn-danger waves-effect" data-dismiss="modal">No</a>
+      </div>
+    </div>
+    <!--/.Content-->
+  </div>
 </div>
