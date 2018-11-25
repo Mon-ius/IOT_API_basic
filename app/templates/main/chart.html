@@ -17,10 +17,10 @@
     <div class="container">
         <h4 class="h1-responsive font-weight-bold text-center my-5">Data View</h4>
         <hr class="my-5">
-        <div style="width:99%;">
-		<canvas id="canvas"></canvas>
-	    </div>
+        
+	    
     </div>
+	        <div id="myDiv"><!-- Plotly chart will be drawn inside this DIV --></div>
 </section>
 
 
@@ -28,100 +28,228 @@
 
 {% block scripts %}
 {{ super() }}
-<script src="{{ url_for( 'static',filename='js/Chart.bundle.js' )}}"></script>
-<script src="{{ url_for( 'static',filename='js/utils.js' )}}"></script>
+<script src="{{ url_for( 'static',filename='js/plotly-latest.min.js' )}}"></script>
 <script src="https://cdn.jsdelivr.net/npm/moment@latest/moment.min.js"></script>
-<script>
-var tmp_data=[];
-var lgt_data=[];
-var t_data=[];
-    window.onload = function () {
-        console.log("begin");
-
-            $.ajax("{{ light }}").done(
-                function (data) {
+    <script>
+    function detectSensor(){
+        var x = Cookies.get('token');
+        $.ajax({
+            type: 'get',
+            url: '{{ sensor }}',
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('Authorization', 'Basic '+x);
+            },
+            success: 
+                function(data) {
                     console.log(data);
-                    for(var i=0;i<30;i++)
-                        lgt_data.push(data['lights'][i]['value'])
-                    console.log(lgt_data);
-            }
-        );
-        $.ajax("{{ tmp }}").done(
-            function (data) {
-                console.log(data);
-                for(var i=0;i<30;i++){
-                    tmp_data.push(data['temps'][i]['value'])
-                    t_data.push(moment(data['temps'][i]['creation_date'], "HH:mm:ss"))
-                }
-                var ctx = document.getElementById('canvas').getContext('2d');
-                window.myLine = new Chart(ctx, config);
-            }
-            );
-    }
-</script>
-<script>
-    var config = {
-        type: 'line',
-
-        data: {
-            labels:t_data,
-            datasets: [{
-                label: 'Tempertature',
-                backgroundColor: window.chartColors.red,
-                borderColor: window.chartColors.red,
-                data: tmp_data,
-                fill: false,
-            }, {
-                label: 'Light',
-                fill: false,
-                backgroundColor: window.chartColors.blue,
-                borderColor: window.chartColors.blue,
-                data: lgt_data,
-            }]
-        },
-        options: {
-            responsive: true,
-            title: {
-                display: true,
-                text: 'Internet Of Things Data in Chart View '
+                    $.each(data["sensors"], function(i, item) {
+                        sensorCollections.push(item.uuid);
+                        labels.push(item.stype);
+                    });
+                    Nsensor= sensorCollections.length;
+                },            
+            fail: function(xhr, textStatus, errorThrown){
+                console.log('request failed');
             },
-            tooltips: {
-                mode: 'index',
-                intersect: false,
-            },
-            hover: {
-                mode: 'nearest',
-                intersect: true
-            },
-            scales: {
-                xAxes: [{
-                    type: 'time',
-                    time: {
-                        parser:'HH:mm:ss',
-                        unit: 'second',
-                        displayFormats: {
-                        second: "mm:ss"
-                        }
-                    },
-                    display: true,
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'TimeLine'
-                    },
-               ticks: {
-                  source: 'data'
-               }
-                }],
-                yAxes: [{
-                    display: true,
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'Value'
-                    }
-                }]
+            error: function(xhr, status, error){
+                console.log('request failed');
             }
-        }
+        });
     };
+    function appenData(uuid,token){
+            console.log(token);
+            payload = {
+                "token":token || ""
+            };
+            $.ajax({
+                url:  '{{ dataset }}',
+                type: "get",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader('uuid', uuid);
+                },
+                data:payload,
+                success: 
+                    function(data) {
+                        var xTmp =[];
+                        var yTmp =[];
+                        $.each(data["dataset"], function(i, item) {
+                            xTmp.push(item.creation_date)
+                            yTmp.push(item.value);
+                        });
+                        xData.push(xTmp);
+                        yData.push(yTmp);
+                        console.log("2333");
+                    },            
+                fail: function(xhr, textStatus, errorThrown){
+                    alert('request failed');
+                },
+                error: function(xhr, status, error){
+                    alert('request failed');
+                }
+            });
+        };
+    function dataRq(){
+        console.log(sensorCollections);
+        for ( var i = 0 ; i < sensorCollections.length ; i++ ) { 
+            appenData(sensorCollections[i]);
+        };
+    };
+    
+    var sensorCollections =[];
+    var labels = [];
+    var xData = [];
+    var yData = [];
+    var data = [];
+    var Nsensor=0;
+    $(document).ready(function () {
+
+        $.when(detectSensor()).done(function(){
+            setTimeout(
+            function() {
+                $.when(dataRq()).done(function(){
+                    setTimeout(
+                    function() 
+                    {
+
+                        for ( var i = 0 ; i < xData.length ; i++ ) {
+                        var result = {
+                            x: xData[i],
+                            y: yData[i],
+                            type: 'scatter',
+                            mode: 'lines',
+
+                        };
+                        var result2 = {
+                            x: [xData[i][0], xData[i][xData[i].length-1]],
+                            y: [yData[i][0], yData[i][yData[i].length-1]],
+                            type: 'scatter',
+                            mode: 'markers',
+                            marker: {
+                            size: 12
+                            }
+                        };
+                        data.push(result, result2);
+                        }
+
+                        var layout = {
+                        showlegend: false,
+                        xaxis: {
+                            showline: true,
+                            showgrid: false,
+                            showticklabels: true,
+                            linecolor: 'rgb(204,204,204)',
+                            linewidth: 2,
+                            autotick: true,
+                            ticks: 'inside',
+                            tickcolor: 'rgb(204,204,204)',
+                            tickwidth: 2,
+                            ticklen: 5,
+                            tickfont: {
+                            family: 'Arial',
+                            size: 12,
+                            color: 'rgb(82, 82, 82)'
+                            }
+                        },
+                        yaxis: {
+                            showgrid: false,
+                            zeroline: false,
+                            showline: false,
+                            showticklabels: false
+                        },
+                        autosize: true,
+                        margin: {
+                            autoexpand: true,
+
+                        },
+                        
+                        annotations: [
+                            {
+                            xref: 'paper',
+                            yref: 'paper',
+                            x: 0.0,
+                            y: 1.05,
+                            xanchor: 'left',
+                            yanchor: 'bottom',
+                            text: 'Total : '+ Nsensor + " sensors displayed",
+                            font:{
+                                family: 'Arial',
+                                size: 30,
+                                color: 'rgb(37,37,37)'
+                            },
+                            showarrow: false
+                            },
+                            {
+                            xref: 'paper',
+                            yref: 'paper',
+                            x: 0.5,
+                            y: -0.1,
+                            xanchor: 'center',
+                            yanchor: 'top',
+                            text: 'Source: Collected by sensors.',
+                            showarrow: false,
+                            font: {
+                                family: 'Arial',
+                                size: 12,
+                                color: 'rgb(150,150,150)'
+                            }
+                            }
+                        ]
+                        };
+
+                        for ( var i = 0 ; i < xData.length ; i ++ ) {
+                        var result = {
+                            xref: 'paper',
+                            x: 0.05,
+                            y: yData[i][0],
+                            xanchor: 'right',
+                            yanchor: 'middle',
+                            text: labels[i] + ' ' + yData[i][0] +'%',
+                            showarrow: false,
+                            font: {
+                            family: 'Arial',
+                            size: 16,
+                            color: 'black'
+                            }
+                        };
+                        var result2 = {
+                            xref: 'paper',
+                            x: 0.95,
+                            y: yData[i][yData[i].length-1],
+                            xanchor: 'left',
+                            yanchor: 'middle',
+                            text: yData[i][yData[i].length-1] +'%',
+                            font: {
+                            family: 'Arial',
+                            size: 16,
+                            color: 'black'
+                            },
+                            showarrow: false
+                        };
+                        
+                        layout.annotations.push(result, result2);
+                        }
+                        console.log(xData);
+                        console.log(yData);
+                        var options = {
+                            modeBarButtonsToRemove: ['toggleSpikelines','hoverCompareCartesian','hoverClosestCartesian','sendDataToCloud','toImage','lasso2d' , 'pan', 'select2d', 'autoScale2d'],
+                            responsive: true,
+                            displaylogo: false,
+                            scrollZoom: true, // lets us scroll to zoom in and out 
+                            showLink: false, // removes the link to edit on plotly
+                        };
+                        Plotly.newPlot('myDiv', data, layout, options);
+                    }, 500);
+                
+                });
+            }, 300);
+        });
+    });
+
+
+
+
+
+
 
 </script>
 {% endblock %}

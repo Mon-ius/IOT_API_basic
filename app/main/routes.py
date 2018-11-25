@@ -17,9 +17,9 @@ def relationship():
 @bp.route('/chart', methods=['GET', 'POST'])
 def chart():
     auth = url_for('main.index',  _external=True)+'api/users'
-    tmp  = url_for('main.index',  _external=True)+'api/temps'
-    light  = url_for('main.index',  _external=True)+'api/lights'
-    return render_template('main/chart.html', title='Chart',tmp=tmp,light=light,auth=auth)
+    sensor = url_for('main.index',  _external=True)+'api/sensors'
+    dataset = url_for('main.index',  _external=True)+'api/dataset'
+    return render_template('main/chart.html', title='Chart',auth=auth,sensor=sensor,dataset=dataset)
 
 @bp.route('/mannual', methods=['GET', 'POST'])
 def mannual():
@@ -34,8 +34,7 @@ def table():
     auth = url_for('main.index',  _external=True)+'api/users'
     sensor = url_for('main.index',  _external=True)+'api/sensors'
     dataset = url_for('main.index',  _external=True)+'api/dataset'
-    tmp  = url_for('main.index',  _external=True)+'api/temps'
-    return render_template('main/table.html', title='Table',tmp=tmp,auth=auth,sensor=sensor,dataset=dataset)
+    return render_template('main/table.html', title='Table',auth=auth,sensor=sensor,dataset=dataset)
 
 
 
