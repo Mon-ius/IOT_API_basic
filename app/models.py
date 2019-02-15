@@ -11,7 +11,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from flask import current_app
 import uuid
-
+    
 class User( db.Model): 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), index=True, unique=True)
@@ -51,7 +51,7 @@ class User( db.Model):
 
 class Sensor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    uuid = db.Column(db.String(60), index=True, default=uuid.uuid4())
+    uuid = db.Column(db.String(60), index=True, default=str(uuid.uuid1()))
     stype = db.Column(db.String(30))
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
