@@ -12,7 +12,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from flask import current_app
 import uuid
     
-class User( db.Model): 
+class User(db.Model): 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
